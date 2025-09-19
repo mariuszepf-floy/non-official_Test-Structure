@@ -1,0 +1,40 @@
+name: CI Test Pipeline
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  auto-tests:
+    name: Automation Block
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - name: Run Automated Tests
+        run: pytest -m "level('auto')" --junitxml=reports/auto.xml
+
+  semi-tests:
+    name: Semi-Automation Block
+    runs-on: ubuntu-latest
+    continue-on-error: true   # pipeline geht weiter, auch wenn semi fehlschlägt
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - name: Run Semi-Automated Tests
+        run: pytest -m "level('semi')" --junitxml=reports/semi.xml
+
+  manual-tests:
+    name: Manual Block
+    runs-on: ubuntu-latest
+    steps:
+      - name: Manual Tests Placeholder
+        run: |
+          echo "Manual tests pending."
+          echo "Please execute according to QA/Clinical checklist."

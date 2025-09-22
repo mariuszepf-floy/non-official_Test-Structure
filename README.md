@@ -1,10 +1,10 @@
 # Testing Repository
 
-This repository contains 78 test cases for our medical product testing.
-The structure is organized by Suites (regulatory alignment) and Automation Levels (execution strategy).
+This repository contains **78 test cases** for our medical product. The structure is organized by **Suites** (regulatory alignment) and **Automation Levels** (execution strategy).
 
-Repository Structure
-tests/
+## Repository Structure
+
+```tests/
 │
 ├── smoke/        # 🟩 Smoke & Compliance (43 tests)
 │   ├── auto/     # Fully automated security & output checks
@@ -23,11 +23,13 @@ tests/
 └── clinical/     # 🟥 Clinical Validation (9 tests)
     ├── auto/     # Patient leakage script
     └── manual/   # Data quality, UAT, clinical purpose
+```
 
-Tagging System
+## Tagging System
 
-Each test uses pytest markers for suite and automation level:
+Each test uses `pytest` markers for suite and automation level:
 
+```python
 import pytest
 
 @pytest.mark.suite("smoke")
@@ -35,54 +37,58 @@ import pytest
 def test_tls_port_open():
     # TODO: implement TLS port check
     assert True
+```
 
-Suites: smoke, system, pipeline, clinical
-
-Levels: auto, semi, manual
+- **Suites:** `smoke`, `system`, `pipeline`, `clinical`
+- **Levels:** `auto`, `semi`, `manual`
 
 Manual tests are skipped automatically but remain in reports for traceability:
 
+```python
 @pytest.mark.suite("clinical")
 @pytest.mark.level("manual")
 @pytest.mark.skip(reason="Manual validation required: UAT with clinicians")
 def test_user_acceptance():
     pass
+```
 
-CI/CD Integration
+## CI/CD Integration
 
 Tests are executed in three GitHub Actions jobs:
 
-🟢 Automation Block → runs all auto tests (~65% of cases)
+- 🟢 **Automation Block**: runs all auto tests (~65% of cases)
+- 🟡 **Semi-Automation Block**: runs semi tests, flagged for review (~25%)
+- 🔴 **Manual Block**: manual tests are reported as pending (~10%)
 
-🟡 Semi-Automation Block → runs semi tests, flagged for review (~25%)
+**Workflow:** `.github/workflows/tests.yml`
 
-🔴 Manual Block → manual tests are reported as pending (~10%)
+## Benefits
 
-Workflow: .github/workflows/tests.yml
+- **Maximum automation:** majority of tests run fully in CI/CD
+- **Traceability:** all Suites & test IDs visible for audits (IEC 62304, IEC 81001-5-1)
+- **Clarity:** manual and semi-automated tests are flagged, not hidden
 
-Benefits
-
-Maximum automation: majority of tests run fully in CI/CD
-
-Traceability: all Suites & test IDs visible for audits (IEC 62304, IEC 81001-5-1)
-
-Clarity: manual and semi-automated tests are flagged, not hidden
-
-How to Use
+## How to Use
 
 Generate test files (already prepared with placeholders):
 
+```bash
 python generate_tests.py
+```
 
 Run automated tests locally:
 
+```bash
 pytest -m "level('auto')"
+```
 
 Run semi-automated tests:
 
+```bash
 pytest -m "level('semi')"
+```
 
 Manual tests remain pending and must be performed according to the QA/Clinical checklist.
 
-Key principle:
+**Key principle:**  
 Changes trigger Suites → Suites trigger Auto/Semi/Manual tests → CI/CD runs what is automatable.
